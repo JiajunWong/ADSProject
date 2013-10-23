@@ -33,13 +33,7 @@ public class MST
         if (type == SchemType.F_HEAP_SCHEME)
         {
             fibonacciHeap = new FibonacciHeap<Integer>();
-            for (int i = 0; i < edgeWeightedGraph.V(); i++)
-            {
-                if (!marked[i])
-                {
-                    FiPrim(edgeWeightedGraph, i);
-                }
-            }
+            FiPrim(edgeWeightedGraph, 0);
         }
         else if (type == SchemType.SIMPLE_SCHEME)
         {
@@ -116,7 +110,23 @@ public class MST
 
     private void FiScan(EdgeWeightedGraph edgeWeightedGraph, FibonacciHeapNode<Integer> minNode)
     {
-
+        int v = minNode.data;
+        marked[v] = true;
+        for(Edge e: edgeWeightedGraph.adj(v)){
+            int w = e.other(v);
+            FibonacciHeapNode<Integer> fibonacciHeapNode = new FibonacciHeapNode<Integer>(w, e.weight());
+            if (marked[w])
+            {
+                continue;
+            }
+            if (e.weight() < distTo[w])
+            {
+                distTo[w] = e.weight();
+                edgeTo[w] = e;
+                if (fibonacciHeap.contains(w)) fibonacciHeap.decreaseKey(fibonacciHeapNode, distTo[w]);
+                else                fibonacciHeap.insert(fibonacciHeapNode, distTo[w]);
+            }
+        }
     }
 
     public Iterable<Edge> edges()
@@ -146,13 +156,15 @@ public class MST
 
     public static void main(String[] args)
     {
-        EdgeWeightedGraph edgeWeightedGraph = GraphFactory.simple(1000, 0.5);
-        for(int i = 0; i < edgeWeightedGraph.V(); i++){
-            for(Edge e : edgeWeightedGraph.adj(i)){
-                System.out.println(":::"+ e);
+        EdgeWeightedGraph edgeWeightedGraph = GraphFactory.simple(100, 0.5);
+        for (int i = 0; i < edgeWeightedGraph.V(); i++)
+        {
+            for (Edge e : edgeWeightedGraph.adj(i))
+            {
+                System.out.println(":::" + e);
             }
         }
-        MST mst = new MST(edgeWeightedGraph, SchemType.SIMPLE_SCHEME);
+        MST mst = new MST(edgeWeightedGraph, SchemType.F_HEAP_SCHEME);
         for (Edge e : mst.edges())
         {
             System.out.println(e);
