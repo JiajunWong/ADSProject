@@ -1,5 +1,6 @@
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import DataStructure.FibonacciHeap;
 import DataStructure.FibonacciHeapNode;
@@ -16,7 +17,7 @@ public class MST
     private Edge[] edgeTo;
     private int[] distTo;
     private boolean[] marked;
-    private LinkedList<Integer> arrayList;
+    private HashMap<Integer, Integer> array;
     private FibonacciHeap<Integer> fibonacciHeap;
 
     public MST(EdgeWeightedGraph edgeWeightedGraph, SchemType type)
@@ -42,11 +43,7 @@ public class MST
         }
         else if (type == SchemType.SIMPLE_SCHEME)
         {
-            arrayList = new LinkedList<Integer>();
-            for (int i = 0; i < edgeWeightedGraph.V(); i++)
-            {
-                arrayList.add(i, null);
-            }
+            array = new HashMap<Integer, Integer>();
             SiPrim(edgeWeightedGraph, 0);
         }
         else
@@ -60,11 +57,10 @@ public class MST
     private void SiPrim(EdgeWeightedGraph edgeWeightedGraph, int i)
     {
         distTo[i] = 0;
-        arrayList.add(i, distTo[i]);
-        while (!arrayList.isEmpty())
+        array.put(i, distTo[i]);
+        while (!array.isEmpty())
         {
-            int sourceV = getMin(arrayList);
-            System.out.println("v is "+ sourceV);
+            int sourceV = getMin(array);
             SiScan(edgeWeightedGraph, sourceV);
         }
     }
@@ -74,7 +70,6 @@ public class MST
         marked[v] = true;
         for (Edge e : edgeWeightedGraph.adj(v))
         {
-//            System.out.println("edges: "+ e);
             int w = e.other(v);
             if (marked[w])
             {
@@ -84,29 +79,26 @@ public class MST
             {
                 distTo[w] = e.weight();
                 edgeTo[w] = e;
-//                System.out.println("w is " + w);
-                arrayList.add(w, distTo[w]);
+                array.put(w, distTo[w]);
             }
         }
     }
 
-    private int getMin(LinkedList<Integer> arrayList)
+    private int getMin(HashMap<Integer, Integer> arrayList)
     {
         int value = Integer.MAX_VALUE;
         int index = Integer.MAX_VALUE;
-        for (int i = 0; i < arrayList.size(); i++)
+        Iterator<Integer> it = arrayList.keySet().iterator();
+        while (it.hasNext())
         {
-            if (arrayList.get(i) != null)
+            int key = it.next();
+            if (arrayList.get(key) < value)
             {
-                System.out.println("get("+i+") "+ arrayList.get(i));
-                if (arrayList.get(i) < value)
-                {
-                    value = arrayList.get(i);
-                    index = i;
-                }
+                value = arrayList.get(key);
+                index = key;
             }
         }
-        arrayList.add(index, null);
+        arrayList.remove(index);
         return index;
     }
 
@@ -154,18 +146,16 @@ public class MST
 
     public static void main(String[] args)
     {
-        EdgeWeightedGraph edgeWeightedGraph = GraphFactory.simple(50, 0.5);
-//        for (int i = 0; i < edgeWeightedGraph.V(); i++)
-//        {
-//            for(Edge e : edgeWeightedGraph.adj(i)){
-//                System.out.println(e);
-//            }
-//        }
+        EdgeWeightedGraph edgeWeightedGraph = GraphFactory.simple(1000, 0.5);
+        for(int i = 0; i < edgeWeightedGraph.V(); i++){
+            for(Edge e : edgeWeightedGraph.adj(i)){
+                System.out.println(":::"+ e);
+            }
+        }
         MST mst = new MST(edgeWeightedGraph, SchemType.SIMPLE_SCHEME);
-//                for (Edge e : mst.edges())
-//                {
-//                    System.out.println("...............................");
-//                    System.out.println(e);
-//                }
+        for (Edge e : mst.edges())
+        {
+            System.out.println(e);
+        }
     }
 }

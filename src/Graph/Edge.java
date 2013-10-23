@@ -18,7 +18,7 @@ public class Edge implements Comparable<Edge>
     public Edge(int v, int w){
 //        double weight = (double) (Math.random() * EdgeWeightedGraph.WEIGHT_SIZE);
 //        double weight = (double) (StdRandom.uniform() * EdgeWeightedGraph.WEIGHT_SIZE);
-        int weight = StdRandom.uniform(EdgeWeightedGraph.WEIGHT_SIZE);
+        int weight = StdRandom.uniform(EdgeWeightedGraph.WEIGHT_SIZE) + 1;
         this.v = v;
         this.w = w;
         this.weight = weight;
