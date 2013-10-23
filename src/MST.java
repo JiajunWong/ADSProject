@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 import DataStructure.FibonacciHeap;
 import DataStructure.FibonacciHeapNode;
@@ -45,6 +43,10 @@ public class MST
         else if (type == SchemType.SIMPLE_SCHEME)
         {
             arrayList = new LinkedList<Integer>();
+            for (int i = 0; i < edgeWeightedGraph.V(); i++)
+            {
+                arrayList.add(i, null);
+            }
             SiPrim(edgeWeightedGraph, 0);
         }
         else
@@ -62,6 +64,7 @@ public class MST
         while (!arrayList.isEmpty())
         {
             int sourceV = getMin(arrayList);
+            System.out.println("v is "+ sourceV);
             SiScan(edgeWeightedGraph, sourceV);
         }
     }
@@ -71,7 +74,7 @@ public class MST
         marked[v] = true;
         for (Edge e : edgeWeightedGraph.adj(v))
         {
-            System.out.println(e);
+//            System.out.println("edges: "+ e);
             int w = e.other(v);
             if (marked[w])
             {
@@ -81,26 +84,30 @@ public class MST
             {
                 distTo[w] = e.weight();
                 edgeTo[w] = e;
-                arrayList[w] = distTo[w];
+//                System.out.println("w is " + w);
+                arrayList.add(w, distTo[w]);
             }
         }
     }
 
     private int getMin(LinkedList<Integer> arrayList)
     {
-        
-    }
-
-    private boolean isEmpty(int[] arraylist)
-    {
-        for (int i = 0; i < arraylist.length; i++)
+        int value = Integer.MAX_VALUE;
+        int index = Integer.MAX_VALUE;
+        for (int i = 0; i < arrayList.size(); i++)
         {
-            if (arraylist[i] != 0)
+            if (arrayList.get(i) != null)
             {
-                return false;
+                System.out.println("get("+i+") "+ arrayList.get(i));
+                if (arrayList.get(i) < value)
+                {
+                    value = arrayList.get(i);
+                    index = i;
+                }
             }
         }
-        return true;
+        arrayList.add(index, null);
+        return index;
     }
 
     private void FiPrim(EdgeWeightedGraph edgeWeightedGraph, int s)
@@ -151,14 +158,14 @@ public class MST
 //        for (int i = 0; i < edgeWeightedGraph.V(); i++)
 //        {
 //            for(Edge e : edgeWeightedGraph.adj(i)){
-//                System.out.println();
+//                System.out.println(e);
 //            }
 //        }
         MST mst = new MST(edgeWeightedGraph, SchemType.SIMPLE_SCHEME);
-                for (Edge e : mst.edges())
-                {
-                    System.out.println("...............................");
-                    System.out.println(e);
-                }
+//                for (Edge e : mst.edges())
+//                {
+//                    System.out.println("...............................");
+//                    System.out.println(e);
+//                }
     }
 }
