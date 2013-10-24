@@ -1,5 +1,7 @@
 package Graph;
 
+import java.util.Random;
+
 import Util.StdRandom;
 
 public class Edge implements Comparable<Edge>
@@ -16,9 +18,9 @@ public class Edge implements Comparable<Edge>
     }
     
     public Edge(int v, int w){
-//        double weight = (double) (Math.random() * EdgeWeightedGraph.WEIGHT_SIZE);
-//        double weight = (double) (StdRandom.uniform() * EdgeWeightedGraph.WEIGHT_SIZE);
-        int weight = StdRandom.uniform(EdgeWeightedGraph.WEIGHT_SIZE) + 1;
+        Random random = new Random();
+//        int weight = StdRandom.uniform(EdgeWeightedGraph.WEIGHT_SIZE) + 1;
+        int weight = random.nextInt(EdgeWeightedGraph.WEIGHT_SIZE) + 1;
         this.v = v;
         this.w = w;
         this.weight = weight;

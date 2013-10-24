@@ -1,9 +1,9 @@
+package Util;
 import java.util.HashSet;
 
 import DataStructure.MinPQ;
 import Graph.Edge;
 import Graph.EdgeWeightedGraph;
-import Util.StdRandom;
 
 public class GraphFactory
 {

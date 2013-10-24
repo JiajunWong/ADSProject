@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import Util.GraphFactory;
+
 import DataStructure.FibonacciHeap;
 import DataStructure.FibonacciHeapNode;
 import Graph.Edge;
@@ -32,13 +34,27 @@ public class MST
         }
         if (type == SchemType.F_HEAP_SCHEME)
         {
+            long start = 0, stop = 0;
+            start = System.currentTimeMillis();
+            
             fibonacciHeap = new FibonacciHeap<Integer>();
             FiPrim(edgeWeightedGraph, 0);
+            
+            stop = System.currentTimeMillis();
+            long time = stop - start;
+            System.out.println("FibonacciHeap running time: " + time);
         }
         else if (type == SchemType.SIMPLE_SCHEME)
         {
+            long start = 0, stop = 0;
+            start = System.currentTimeMillis();
+            
             array = new HashMap<Integer, Integer>();
             SiPrim(edgeWeightedGraph, 0);
+            
+            stop = System.currentTimeMillis();
+            long time = stop - start;
+            System.out.println("Simple running time: " + time);
         }
         else
         {
@@ -108,13 +124,13 @@ public class MST
         }
     }
 
-    private void FiScan(EdgeWeightedGraph edgeWeightedGraph, FibonacciHeapNode<Integer> minNode)
+    private void FiScan(EdgeWeightedGraph edgeWeightedGraph, FibonacciHeapNode<Integer> node)
     {
-        int v = minNode.data;
+        int v = node.getData();
         marked[v] = true;
-        for(Edge e: edgeWeightedGraph.adj(v)){
+        for (Edge e : edgeWeightedGraph.adj(v))
+        {
             int w = e.other(v);
-            FibonacciHeapNode<Integer> fibonacciHeapNode = new FibonacciHeapNode<Integer>(w, e.weight());
             if (marked[w])
             {
                 continue;
@@ -123,8 +139,16 @@ public class MST
             {
                 distTo[w] = e.weight();
                 edgeTo[w] = e;
-                if (fibonacciHeap.contains(w)) fibonacciHeap.decreaseKey(fibonacciHeapNode, distTo[w]);
-                else                fibonacciHeap.insert(fibonacciHeapNode, distTo[w]);
+                FibonacciHeapNode<Integer> newNode = new FibonacciHeapNode<Integer>(w);
+                if (fibonacciHeap.contains(newNode))
+                {
+                    fibonacciHeap.decreaseKey(newNode, distTo[w]);
+                }
+                else
+                {
+                    fibonacciHeap.insert(newNode, distTo[w]);
+
+                }
             }
         }
     }
@@ -148,26 +172,56 @@ public class MST
         int weight = 0;
         for (Edge e : edges())
         {
-            weight = +e.weight();
+            weight = weight + e.weight();
         }
 
         return weight;
     }
 
+    private static boolean isEqual(MST mstFi, MST mstSi)
+    {
+        if (mstFi.weight() == mstSi.weight())
+        {
+            System.out.println("**************************************");
+            System.out.println("Fiweight: " + mstFi.weight());
+            System.out.println("Siweight: " + mstSi.weight());
+            return true;
+        }
+        return false;
+    }
+
     public static void main(String[] args)
     {
-        EdgeWeightedGraph edgeWeightedGraph = GraphFactory.simple(100, 0.5);
-        for (int i = 0; i < edgeWeightedGraph.V(); i++)
+        if (args != null)
         {
-            for (Edge e : edgeWeightedGraph.adj(i))
+            if (args.length == 3)
             {
-                System.out.println(":::" + e);
+                String value1 = args[1];
+                String value2 = args[2];
+                Integer numNodes = new Integer(value1);
+                Double density = new Double(value2);
+                density = density / 100;
+                EdgeWeightedGraph edgeWeightedGraph = GraphFactory.simple(numNodes, density);
+                MST mstFi = new MST(edgeWeightedGraph, SchemType.F_HEAP_SCHEME);
+                MST mstSi = new MST(edgeWeightedGraph, SchemType.SIMPLE_SCHEME);
+                //                assert isEqual(mstFi, mstSi);
+                if (isEqual(mstFi, mstSi))
+                {
+                    System.out.println("**************************************");
+                    System.out.println("NOTE: Two Prim's weights are equal!!!");
+                    System.out.println("**************************************");
+                }
+            }
+            else if (args.length == 2)
+            {
+
             }
         }
-        MST mst = new MST(edgeWeightedGraph, SchemType.F_HEAP_SCHEME);
-        for (Edge e : mst.edges())
+        else
         {
-            System.out.println(e);
+            System.out.println("************************************************");
+            System.out.println("*Please Enter Values:                          *");
+            System.out.println("************************************************");
         }
     }
 }
