@@ -4,9 +4,8 @@ import java.util.*;
 
 public class FibonacciHeap<T>
 {
-    private static final double oneOverLogPhi = 1.0 / Math.log((1.0 + Math.sqrt(5.0)) / 2.0);
     private FibonacciHeapNode<T> minNode;
-    private int nNodes;
+    private int numNodes;
     private HashMap<FibonacciHeapNode<T>, T> hashMap;
 
     public FibonacciHeap()
@@ -19,44 +18,29 @@ public class FibonacciHeap<T>
         return minNode == null;
     }
 
-    public void clear()
+    public void decreaseKey(FibonacciHeapNode<T> node, int key)
     {
-        minNode = null;
-        nNodes = 0;
-    }
-
-    public void decreaseKey(FibonacciHeapNode<T> x, int k)
-    {
-        if (k > x.key)
+        if (key > node.weight)
         {
-            throw new IllegalArgumentException("decreaseKey() got larger key value");
+            throw new IllegalArgumentException();
+        }
+        node.weight = key;
+        FibonacciHeapNode<T> parent = node.parent;
+        if ((parent != null) && (node.weight < parent.weight))
+        {
+            cut(node, parent);
+            cascadingCut(parent);
         }
 
-        x.key = k;
-
-        FibonacciHeapNode<T> y = x.parent;
-
-        if ((y != null) && (x.key < y.key))
+        if (node.weight < minNode.weight)
         {
-            cut(x, y);
-            cascadingCut(y);
+            minNode = node;
         }
-
-        if (x.key < minNode.key)
-        {
-            minNode = x;
-        }
-    }
-
-    public void delete(FibonacciHeapNode<T> x)
-    {
-        decreaseKey(x, Integer.MIN_VALUE);
-        removeMin();
     }
 
     public void insert(FibonacciHeapNode<T> node, int key)
     {
-        node.key = key;
+        node.weight = key;
         if (minNode != null)
         {
             node.left = minNode;
@@ -64,7 +48,7 @@ public class FibonacciHeap<T>
             minNode.right = node;
             node.right.left = node;
 
-            if (key < minNode.key)
+            if (key < minNode.weight)
             {
                 minNode = node;
             }
@@ -73,96 +57,8 @@ public class FibonacciHeap<T>
         {
             minNode = node;
         }
-        hashMap.put(node, node.getData());
-        nNodes++;
-    }
-
-    public FibonacciHeapNode<T> min()
-    {
-        return minNode;
-    }
-
-    public FibonacciHeapNode<T> removeMin()
-    {
-        FibonacciHeapNode<T> z = minNode;
-
-        if (z != null)
-        {
-            int numKids = z.degree;
-            FibonacciHeapNode<T> x = z.child;
-            FibonacciHeapNode<T> tempRight;
-
-            while (numKids > 0)
-            {
-                tempRight = x.right;
-
-                x.left.right = x.right;
-                x.right.left = x.left;
-
-                x.left = minNode;
-                x.right = minNode.right;
-                minNode.right = x;
-                x.right.left = x;
-
-                x.parent = null;
-                x = tempRight;
-                numKids--;
-            }
-
-            z.left.right = z.right;
-            z.right.left = z.left;
-
-            if (z == z.right)
-            {
-                minNode = null;
-            }
-            else
-            {
-                minNode = z.right;
-                consolidate();
-            }
-            nNodes--;
-        }
-        hashMap.remove(z);
-        return z;
-    }
-
-    public int size()
-    {
-        return nNodes;
-    }
-
-    public static <T> FibonacciHeap<T> union(FibonacciHeap<T> h1, FibonacciHeap<T> h2)
-    {
-        FibonacciHeap<T> h = new FibonacciHeap<T>();
-
-        if ((h1 != null) && (h2 != null))
-        {
-            h.minNode = h1.minNode;
-
-            if (h.minNode != null)
-            {
-                if (h2.minNode != null)
-                {
-                    h.minNode.right.left = h2.minNode.left;
-                    h2.minNode.left.right = h.minNode.right;
-                    h.minNode.right = h2.minNode;
-                    h2.minNode.left = h.minNode;
-
-                    if (h2.minNode.key < h1.minNode.key)
-                    {
-                        h.minNode = h2.minNode;
-                    }
-                }
-            }
-            else
-            {
-                h.minNode = h2.minNode;
-            }
-
-            h.nNodes = h1.nNodes + h2.nNodes;
-        }
-        return h;
+        hashMap.put(node, node.getIndex());
+        numNodes++;
     }
 
     public boolean contains(FibonacciHeapNode<T> heapNode)
@@ -174,42 +70,37 @@ public class FibonacciHeap<T>
         return false;
     }
 
-    protected void cascadingCut(FibonacciHeapNode<T> y)
+    private void cascadingCut(FibonacciHeapNode<T> y)
     {
         FibonacciHeapNode<T> z = y.parent;
 
-        // if there's a parent...
         if (z != null)
         {
-            // if y is unmarked, set it marked
+
             if (!y.childCut)
             {
                 y.childCut = true;
             }
             else
             {
-                // it's marked, cut it from parent
                 cut(y, z);
-
-                // cut its parent as well
                 cascadingCut(z);
             }
         }
     }
 
-    protected void consolidate()
+    private void pairCombine()
     {
-        int arraySize = ((int) Math.floor(Math.log(nNodes) * oneOverLogPhi)) + 1;
+        final double oneOverLogPhi = 1.0 / Math.log((1.0 + Math.sqrt(5.0)) / 2.0);
+        int arraySize = ((int) Math.floor(Math.log(numNodes) * oneOverLogPhi)) + 1;
 
         List<FibonacciHeapNode<T>> array = new ArrayList<FibonacciHeapNode<T>>(arraySize);
 
-        // Initialize degree array
         for (int i = 0; i < arraySize; i++)
         {
             array.add(null);
         }
 
-        // Find the number of root nodes.
         int numRoots = 0;
         FibonacciHeapNode<T> x = minNode;
 
@@ -225,51 +116,34 @@ public class FibonacciHeap<T>
             }
         }
 
-        // For each node in root list do...
         while (numRoots > 0)
         {
-            // Access this node's degree..
             int d = x.degree;
             FibonacciHeapNode<T> next = x.right;
 
-            // ..and see if there's another of the same degree.
             for (;;)
             {
                 FibonacciHeapNode<T> y = array.get(d);
                 if (y == null)
                 {
-                    // Nope.
                     break;
                 }
-
-                // There is, make one of the nodes a child of the other.
-                // Do this based on the key value.
-                if (x.key > y.key)
+                if (x.weight > y.weight)
                 {
                     FibonacciHeapNode<T> temp = y;
                     y = x;
                     x = temp;
                 }
 
-                // FibonacciHeapNode<T> y disappears from root list.
                 link(y, x);
 
-                // We've handled this degree, go to next one.
                 array.set(d, null);
                 d++;
             }
-
-            // Save this node for later when we might encounter another
-            // of the same degree.
             array.set(d, x);
-
-            // Move forward through list.
             x = next;
             numRoots--;
         }
-
-        // Set min to null (effectively losing the root list) and
-        // reconstruct the root list from the array entries in array[].
         minNode = null;
 
         for (int i = 0; i < arraySize; i++)
@@ -280,21 +154,17 @@ public class FibonacciHeap<T>
                 continue;
             }
 
-            // We've got a live one, add it to root list.
             if (minNode != null)
             {
-                // First remove node from root list.
+
                 y.left.right = y.right;
                 y.right.left = y.left;
-
-                // Now add to root list, again.
                 y.left = minNode;
                 y.right = minNode.right;
                 minNode.right = y;
                 y.right.left = y;
 
-                // Check if this is a new min.
-                if (y.key < minNode.key)
+                if (y.weight < minNode.weight)
                 {
                     minNode = y;
                 }
@@ -306,14 +176,12 @@ public class FibonacciHeap<T>
         }
     }
 
-    protected void cut(FibonacciHeapNode<T> x, FibonacciHeapNode<T> y)
+    private void cut(FibonacciHeapNode<T> x, FibonacciHeapNode<T> y)
     {
-        // remove x from childlist of y and decrement degree[y]
         x.left.right = x.right;
         x.right.left = x.left;
         y.degree--;
 
-        // reset y.child if necessary
         if (y.child == x)
         {
             y.child = x.right;
@@ -324,26 +192,22 @@ public class FibonacciHeap<T>
             y.child = null;
         }
 
-        // add x to root list of heap
         x.left = minNode;
         x.right = minNode.right;
         minNode.right = x;
         x.right.left = x;
 
-        // set parent[x] to nil
         x.parent = null;
 
-        // set mark[x] to false
         x.childCut = false;
     }
 
-    protected void link(FibonacciHeapNode<T> y, FibonacciHeapNode<T> x)
+    private void link(FibonacciHeapNode<T> y, FibonacciHeapNode<T> x)
     {
-        // remove y from root list of heap
+
         y.left.right = y.right;
         y.right.left = y.left;
 
-        // make y a child of x
         y.parent = x;
 
         if (x.child == null)
@@ -360,11 +224,50 @@ public class FibonacciHeap<T>
             y.right.left = y;
         }
 
-        // increase degree[x]
         x.degree++;
 
-        // set mark[y] false
         y.childCut = false;
+    }
+
+    public FibonacciHeapNode<T> extractMin()
+    {
+        FibonacciHeapNode<T> min = minNode;
+        if (min != null)
+        {
+            int numKids = min.degree;
+            FibonacciHeapNode<T> x = min.child;
+            FibonacciHeapNode<T> tempRight;
+
+            while (numKids > 0)
+            {
+                tempRight = x.right;
+                x.left.right = x.right;
+                x.right.left = x.left;
+                x.left = minNode;
+                x.right = minNode.right;
+                minNode.right = x;
+                x.right.left = x;
+
+                x.parent = null;
+                x = tempRight;
+                numKids--;
+            }
+            min.left.right = min.right;
+            min.right.left = min.left;
+
+            if (min == min.right)
+            {
+                minNode = null;
+            }
+            else
+            {
+                minNode = min.right;
+                pairCombine();
+            }
+            numNodes--;
+        }
+        hashMap.remove(min);
+        return min;
     }
 
 }

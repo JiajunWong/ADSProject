@@ -60,7 +60,7 @@ public class MinPQ<Key> implements Iterable<Key>
     public Key min()
     {
         if (isEmpty())
-            throw new NoSuchElementException("Priority queue underflow");
+            throw new NoSuchElementException();
         return pq[1];
     }
 

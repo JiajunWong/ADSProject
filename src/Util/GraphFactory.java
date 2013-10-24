@@ -1,4 +1,5 @@
 package Util;
+
 import java.util.HashSet;
 
 import DataStructure.MinPQ;
@@ -7,6 +8,7 @@ import Graph.EdgeWeightedGraph;
 
 public class GraphFactory
 {
+
     public static EdgeWeightedGraph tree(int V)
     {
         EdgeWeightedGraph edgeWeightedGraph = new EdgeWeightedGraph(V);
@@ -17,7 +19,7 @@ public class GraphFactory
         int[] prufer = new int[V - 2];
         for (int i = 0; i < prufer.length; i++)
         {
-            prufer[i] = StdRandom.uniform(V);
+            prufer[i] = (int) (Math.random() * V);
         }
         int[] degree = new int[V];
         for (int i = 0; i < degree.length; i++)
@@ -63,8 +65,8 @@ public class GraphFactory
         HashSet<Edge> edges = new HashSet<Edge>();
         while (edgeWeightedGraph.E() < newE)
         {
-            int v = StdRandom.uniform(V);
-            int w = StdRandom.uniform(V);
+            int v = (int) (Math.random() * V);
+            int w = (int) (Math.random() * V);
             if ((v != w))
             {
                 Edge e = new Edge(v, w);

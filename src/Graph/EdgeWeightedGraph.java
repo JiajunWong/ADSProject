@@ -2,6 +2,8 @@ package Graph;
 
 import java.util.LinkedList;
 
+import Util.ReadFile;
+
 public class EdgeWeightedGraph
 {
     public static final int WEIGHT_SIZE = 1000;
@@ -39,6 +41,21 @@ public class EdgeWeightedGraph
         }
     }
 
+    public EdgeWeightedGraph(String fileName)
+    {
+        ReadFile readFile = new ReadFile(fileName);
+        V = readFile.readInt();
+        E = readFile.readInt();
+        for (int i = 0; i < E; i++)
+        {
+            int v = readFile.readInt();
+            int w = readFile.readInt();
+            int weight = readFile.readInt();
+            Edge e = new Edge(v, w, weight);
+            addEdge(e);
+        }
+    }
+
     public int V()
     {
         return V;
@@ -57,7 +74,7 @@ public class EdgeWeightedGraph
         adj[v].add(e);
         adj[w].add(e);
     }
-    
+
     public void addEdge(int v, int w)
     {
         Edge e = new Edge(v, w);

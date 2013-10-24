@@ -1,9 +1,5 @@
 package Graph;
 
-import java.util.Random;
-
-import Util.StdRandom;
-
 public class Edge implements Comparable<Edge>
 {
     private final int v;
@@ -16,11 +12,10 @@ public class Edge implements Comparable<Edge>
         this.w = w;
         this.weight = weight;
     }
-    
-    public Edge(int v, int w){
-        Random random = new Random();
-//        int weight = StdRandom.uniform(EdgeWeightedGraph.WEIGHT_SIZE) + 1;
-        int weight = random.nextInt(EdgeWeightedGraph.WEIGHT_SIZE) + 1;
+
+    public Edge(int v, int w)
+    {
+        int weight = (int) (Math.random() * EdgeWeightedGraph.WEIGHT_SIZE) + 1;
         this.v = v;
         this.w = w;
         this.weight = weight;
@@ -70,7 +65,7 @@ public class Edge implements Comparable<Edge>
         }
         return false;
     }
-    
+
     @Override
     public String toString()
     {
@@ -78,5 +73,5 @@ public class Edge implements Comparable<Edge>
         sb.append("Edge: ").append(either()).append(" + ").append(other(either())).append(" : Weight: ").append(weight());
         return sb.toString();
     }
-    
+
 }
