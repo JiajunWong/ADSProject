@@ -1,18 +1,18 @@
 package DataStructure;
 
-public class FibonacciHeapNode<T>
+public class FibonacciHeapNode
 {
-    T index;
-    FibonacciHeapNode<T> child;
-    FibonacciHeapNode<T> left;
-    FibonacciHeapNode<T> parent;
-    FibonacciHeapNode<T> right;
+    int index;
+    FibonacciHeapNode child;
+    FibonacciHeapNode left;
+    FibonacciHeapNode parent;
+    FibonacciHeapNode right;
 
     boolean childCut;
     int weight;
     int degree;
 
-    public FibonacciHeapNode(T index)
+    public FibonacciHeapNode(int index)
     {
         right = this;
         left = this;
@@ -24,7 +24,7 @@ public class FibonacciHeapNode<T>
         return weight;
     }
 
-    public final T getIndex()
+    public final int getIndex()
     {
         return index;
     }

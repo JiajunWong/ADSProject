@@ -1,13 +1,16 @@
 package Graph;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.LinkedList;
-
-import Util.ReadFile;
+import java.util.Scanner;
 
 public class EdgeWeightedGraph
 {
     public static final int WEIGHT_SIZE = 1000;
-    private final int V;
+    private int V;
     private int E;
     private LinkedList<Edge>[] adj;
 
@@ -41,18 +44,51 @@ public class EdgeWeightedGraph
         }
     }
 
+    @SuppressWarnings("unchecked")
     public EdgeWeightedGraph(String fileName)
     {
-        ReadFile readFile = new ReadFile(fileName);
-        V = readFile.readInt();
-        E = readFile.readInt();
-        for (int i = 0; i < E; i++)
+        System.out.println("Read Graph From: " + fileName);
+        System.out.println();
+        try
         {
-            int v = readFile.readInt();
-            int w = readFile.readInt();
-            int weight = readFile.readInt();
-            Edge e = new Edge(v, w, weight);
-            addEdge(e);
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            Scanner scanner;
+            scanner = new Scanner(reader.readLine());
+            V = scanner.nextInt();
+            E = 0;
+            int numEdge = scanner.nextInt();
+            adj = (LinkedList<Edge>[]) new LinkedList[V];
+            for (int i = 0; i < V; i++)
+            {
+                adj[i] = new LinkedList<Edge>();
+            }
+            for (int j = 0; j < numEdge; j++)
+            {
+                String s = reader.readLine();
+                if (s != "")
+                {
+                    scanner = new Scanner(s);
+                    int v = scanner.nextInt();
+                    int w = scanner.nextInt();
+                    int weight = scanner.nextInt();
+                    Edge e = new Edge(v, w, weight);
+                    System.out.println(e.toString());
+                    addEdge(e);
+                }
+                scanner.close();
+            }
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 

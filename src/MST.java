@@ -2,12 +2,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import Util.GraphFactory;
-
 import DataStructure.FibonacciHeap;
 import DataStructure.FibonacciHeapNode;
 import Graph.Edge;
 import Graph.EdgeWeightedGraph;
+import Util.GraphFactory;
 
 public class MST
 {
@@ -20,7 +19,7 @@ public class MST
     private int[] distTo;
     private boolean[] marked;
     private HashMap<Integer, Integer> array;
-    private FibonacciHeap<Integer> fibonacciHeap;
+    private FibonacciHeap fibonacciHeap;
 
     public MST(EdgeWeightedGraph edgeWeightedGraph, SchemType type)
     {
@@ -37,7 +36,7 @@ public class MST
             long start = 0, stop = 0;
             start = System.currentTimeMillis();
 
-            fibonacciHeap = new FibonacciHeap<Integer>();
+            fibonacciHeap = new FibonacciHeap();
             FiPrim(edgeWeightedGraph, 0);
 
             stop = System.currentTimeMillis();
@@ -93,6 +92,14 @@ public class MST
                 array.put(w, distTo[w]);
             }
         }
+        for (int j = 0; j < edgeWeightedGraph.V(); j++)
+        {
+            for (int k = 0; k < edgeWeightedGraph.V(); k++){
+                //TODO need assert the structure of the tree
+//                assert isEqual(mstFi, mstSi);
+                
+            }
+        }
     }
 
     private int getMin(HashMap<Integer, Integer> arrayList)
@@ -116,16 +123,17 @@ public class MST
     private void FiPrim(EdgeWeightedGraph edgeWeightedGraph, int s)
     {
         distTo[s] = 0;
-        FibonacciHeapNode<Integer> source = new FibonacciHeapNode<Integer>(s);
+        FibonacciHeapNode source = new FibonacciHeapNode(s);
         fibonacciHeap.insert(source, distTo[s]);
         while (!fibonacciHeap.isEmpty())
         {
-            FibonacciHeapNode<Integer> minNode = fibonacciHeap.extractMin();
+            FibonacciHeapNode minNode = fibonacciHeap.extractMin();
+            //            System.out.println("extractMin: "+minNode.getIndex());
             FiScan(edgeWeightedGraph, minNode);
         }
     }
 
-    private void FiScan(EdgeWeightedGraph edgeWeightedGraph, FibonacciHeapNode<Integer> node)
+    private void FiScan(EdgeWeightedGraph edgeWeightedGraph, FibonacciHeapNode node)
     {
         int v = node.getIndex();
         marked[v] = true;
@@ -140,7 +148,7 @@ public class MST
             {
                 distTo[w] = e.weight();
                 edgeTo[w] = e;
-                FibonacciHeapNode<Integer> newNode = new FibonacciHeapNode<Integer>(w);
+                FibonacciHeapNode newNode = new FibonacciHeapNode(w);
                 if (fibonacciHeap.contains(newNode))
                 {
                     fibonacciHeap.decreaseKey(newNode, distTo[w]);
@@ -219,6 +227,18 @@ public class MST
                 System.out.println("NOTE: Two Prim's weights are equal!!!");
                 System.out.println("**************************************");
             }
+
+            System.out.println("Fi tree:");
+            for(Edge e : mstFi.edges()){
+                System.out.println(e);
+            }
+            System.out.println("**************************************");
+
+            System.out.println("Si tree:");
+            for(Edge e : mstSi.edges()){
+                System.out.println(e);
+            }
+            System.out.println("**************************************");
         }
         else
         {
