@@ -41,8 +41,8 @@ public class MST
 
             stop = System.currentTimeMillis();
             long time = stop - start;
-            System.out.println("**************************************");
-            System.out.println("FibonacciHeap running time: " + time);
+            //            System.out.println("**************************************");
+            //            System.out.println("FibonacciHeap running time: " + time);
         }
         else if (type == SchemType.SIMPLE_SCHEME)
         {
@@ -54,7 +54,7 @@ public class MST
 
             stop = System.currentTimeMillis();
             long time = stop - start;
-            System.out.println("Simple running time: " + time);
+            //            System.out.println("Simple running time: " + time);
         }
         else
         {
@@ -94,10 +94,11 @@ public class MST
         }
         for (int j = 0; j < edgeWeightedGraph.V(); j++)
         {
-            for (int k = 0; k < edgeWeightedGraph.V(); k++){
+            for (int k = 0; k < edgeWeightedGraph.V(); k++)
+            {
                 //TODO need assert the structure of the tree
-//                assert isEqual(mstFi, mstSi);
-                
+                //                assert isEqual(mstFi, mstSi);
+
             }
         }
     }
@@ -202,6 +203,7 @@ public class MST
     public static void main(String[] args)
     {
         EdgeWeightedGraph edgeWeightedGraph = null;
+        SchemType schemType = null;
         if (args != null)
         {
             if (args.length == 3)
@@ -212,33 +214,57 @@ public class MST
                 Double density = new Double(value2);
                 density = density / 100;
                 edgeWeightedGraph = GraphFactory.simple(numNodes, density);
+
+                MST mstFi = new MST(edgeWeightedGraph, SchemType.F_HEAP_SCHEME);
+                MST mstSi = new MST(edgeWeightedGraph, SchemType.SIMPLE_SCHEME);
+                //                assert isEqual(mstFi, mstSi);
+                if (isEqual(mstFi, mstSi))
+                {
+                    System.out.println("**************************************");
+                    System.out.println("NOTE: Two Prim's weights are equal!!!");
+                    System.out.println("**************************************");
+                }
+
+                System.out.println("Fi tree:");
+                for (Edge e : mstFi.edges())
+                {
+                    System.out.println(e);
+                }
+                System.out.println("**************************************");
+
+                System.out.println("Si tree:");
+                for (Edge e : mstSi.edges())
+                {
+                    System.out.println(e);
+                }
+                System.out.println("**************************************");
+                return;
             }
             else if (args.length == 2)
             {
+                String type = args[0];
+                if (type.equals("-s"))
+                {
+                    schemType = SchemType.SIMPLE_SCHEME;
+                }
+                else if (type.equals("-f"))
+                {
+                    schemType = SchemType.F_HEAP_SCHEME;
+                }
+                else
+                {
+                    throw new IllegalArgumentException();
+                }
                 String fileName = args[1];
                 edgeWeightedGraph = new EdgeWeightedGraph(fileName);
             }
-            MST mstFi = new MST(edgeWeightedGraph, SchemType.F_HEAP_SCHEME);
-            MST mstSi = new MST(edgeWeightedGraph, SchemType.SIMPLE_SCHEME);
-            //                assert isEqual(mstFi, mstSi);
-            if (isEqual(mstFi, mstSi))
+            MST mstFi = new MST(edgeWeightedGraph, schemType);
+            System.out.println(mstFi.weight());
+            for (Edge e : mstFi.edges())
             {
-                System.out.println("**************************************");
-                System.out.println("NOTE: Two Prim's weights are equal!!!");
-                System.out.println("**************************************");
-            }
-
-            System.out.println("Fi tree:");
-            for(Edge e : mstFi.edges()){
                 System.out.println(e);
             }
-            System.out.println("**************************************");
-
-            System.out.println("Si tree:");
-            for(Edge e : mstSi.edges()){
-                System.out.println(e);
-            }
-            System.out.println("**************************************");
+            return;
         }
         else
         {

@@ -70,7 +70,8 @@ public class Edge implements Comparable<Edge>
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append("Edge: ").append(either()).append(" + ").append(other(either())).append(" : Weight: ").append(weight());
+//        sb.append("Edge: ").append(either()).append(" + ").append(other(either())).append(" : Weight: ").append(weight());
+        sb.append(either()).append(" ").append(other(either()));
         return sb.toString();
     }
 

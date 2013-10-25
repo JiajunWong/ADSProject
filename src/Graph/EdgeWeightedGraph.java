@@ -47,8 +47,8 @@ public class EdgeWeightedGraph
     @SuppressWarnings("unchecked")
     public EdgeWeightedGraph(String fileName)
     {
-        System.out.println("Read Graph From: " + fileName);
-        System.out.println();
+//        System.out.println("Read Graph From: " + fileName);
+//        System.out.println();
         try
         {
             BufferedReader reader = new BufferedReader(new FileReader(fileName));
@@ -72,7 +72,7 @@ public class EdgeWeightedGraph
                     int w = scanner.nextInt();
                     int weight = scanner.nextInt();
                     Edge e = new Edge(v, w, weight);
-                    System.out.println(e.toString());
+//                    System.out.println(e.toString());
                     addEdge(e);
                 }
                 scanner.close();
